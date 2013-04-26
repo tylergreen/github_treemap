@@ -1,0 +1,37 @@
+{
+  "name": "github_treemap",
+  "description": "Treemap visualization of github repository",
+  "version": "0.1.0",
+  "homepage": "https://github.com/tylergreen/github_treemap.git)",
+  "author": {
+    "name": "Tyler Green",
+    "email": "tyler.green2@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jorge/github-treemap2.git) git://github.com/tylergreen/github_treemap.git)"
+  },
+  "bugs": {
+    "url": "https://github.com/tylergreen/github_treemap.git)/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/tylergreen/github_treemap.git)/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "lib/github_treemap",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "grunt nodeunit"
+  },
+  "devDependencies": {
+    "grunt-contrib-jshint": "~0.1.1",
+    "grunt-contrib-nodeunit": "~0.1.2",
+    "grunt-contrib-watch": "~0.2.0",
+    "grunt": "~0.4.1"
+  },
+  "keywords": []
+}
