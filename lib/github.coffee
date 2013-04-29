@@ -1,9 +1,8 @@
 https = require 'https'
 _ = require 'underscore'
 
-options =
+get_options =
   host: 'api.github.com'
-  path: '/repos/tylergreen/new-emacs/contents/'
   method: 'GET'
   headers:
     'User-Agent': 'Nodejs/1 Emacs/3'
@@ -19,9 +18,19 @@ github_request = (options, next) ->
 
 module.exports =
  x : () -> 3
- repo_files : (next) ->
-  github_request(options, (data) ->
+
+ ls_files : (path, next) ->
+  get_options['path'] = path
+  github_request(get_options, (data) ->
     files = data.map((x) -> x.name)
     next(files))
- directory_tree: (next) ->
-  next([])
+
+ directory_tree: (path,next) ->
+  get_options['path'] = path
+  github_request(get_options, (data) ->
+    files = data.filter((x) -> x.type == 'file')
+    files.map((f) -> {file: f.name})
+    dirs = data.filter((x) -> x.type == 'dir')
+    next([])
+    #dirs # here is where we will need some async control flow
+  )

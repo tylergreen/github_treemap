@@ -25,14 +25,16 @@ exports['test'] =
 
   'request test': (test) ->
     test.expect(1)
-    github.repo_files((files) ->
+    path = '/repos/tylergreen/new-emacs/contents/'
+    github.ls_files(path, (files) ->
       test.deepEqual([ '.gitignore', 'init.el', 'lisp', 'tests'], files)
       test.done()
     )
 
   'get the recursive tree structure': (test) ->
     test.expect(1)
-    github.directory_tree((tree) ->
+    path = '/repos/tylergreen/new-emacs/contents/'
+    github.directory_tree(path, (tree) ->
       test.deepEqual(tree,@test_tree)
       test.done()
     )
