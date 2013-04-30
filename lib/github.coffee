@@ -46,12 +46,7 @@ ls_files = (path, next) ->
   github_request(get_options, (err, data) ->
     if err then next(err) else next(null, data))
 
-module.exports =
- x : () -> 3
-
- ls_files: ls_files
-
- directory_tree: (dir, done) ->
+directory_tree = (dir, done) ->
     results = []
     ls_files(dir, (err, list) ->
       if err
@@ -63,9 +58,12 @@ module.exports =
           path = "#{dir}/#{file.name}"
           if file.type == 'dir'
             directory_tree(path, (err,res) ->
-              results.push({directory: path, contents: res})
-              pending--
-              done(null, results) if pending == 0)
+              if err
+                done(err)
+              else
+                results.push({directory: path, contents: res})
+                pending--
+                done(null, results) if pending == 0)
           else
             results.push({file: path})
             pending--
@@ -73,5 +71,10 @@ module.exports =
         )
       )
 
+
+module.exports =
+ x : () -> 3
+ ls_files: ls_files
+ directory_tree: directory_tree
 
 module.exports['walk'] = walk

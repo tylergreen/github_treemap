@@ -44,12 +44,25 @@ exports['test'] =
 
   'get the recursive tree structure of a flat repository': (test) ->
     test.expect(2)
-    path = '/repos/tylergreen/flat_test_repo/contents/'
+    path = '/repos/tylergreen/flat_test_repo/contents'
     github.directory_tree(path, (err, tree) ->
       test.ifError(err)
-      test_tree = [{"file":"/repos/tylergreen/flat_test_repo/contents//a.txt"},
-          {"file":"/repos/tylergreen/flat_test_repo/contents//b.txt"},
-          {"file":"/repos/tylergreen/flat_test_repo/contents//c.txt"}]
+      test_tree = [{"file":"/repos/tylergreen/flat_test_repo/contents/a.txt"},
+          {"file":"/repos/tylergreen/flat_test_repo/contents/b.txt"},
+          {"file":"/repos/tylergreen/flat_test_repo/contents/c.txt"}]
+      test.deepEqual(tree,test_tree)
+      test.done()
+    )
+
+  'get the recursive tree structure of a nested repository': (test) ->
+    test.expect(2)
+    path = '/repos/tylergreen/nested_test_repo/contents'
+    github.directory_tree(path, (err, tree) ->
+      test.ifError(err)
+      test_tree =  [ { file: '/repos/tylergreen/nested_test_repo/contents/a.txt' },
+          { file: '/repos/tylergreen/nested_test_repo/contents/c.txt' },
+          { directory: '/repos/tylergreen/nested_test_repo/contents/b', contents: [ { file: '/repos/tylergreen/nested_test_repo/contents/b/b.txt' },
+          { file: '/repos/tylergreen/nested_test_repo/contents/b/d.txt' } ] } ]
       test.deepEqual(tree,test_tree)
       test.done()
     )
