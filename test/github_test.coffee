@@ -35,10 +35,11 @@ exports['test'] =
   'get tree structure of a local dir': (test) ->
     test.expect(1)
     github.walk('test/nested_test_repo', (err, results) ->
-      expected = [ 'test/nested_test_repo/a.txt',
-       'test/nested_test_repo/c.txt',
-       'test/nested_test_repo/b/b-a.txt' ]
-      test.deepEqual(expected, results)
+      expected = [ {file: 'test/nested_test_repo/a.txt'},
+            {file: 'test/nested_test_repo/c.txt'},
+            {directory: 'test/nested_test_repo/b', contents: [ file: 'test/nested_test_repo/b/b-a.txt' ] }
+          ]
+      test.deepEqual(results, expected)
       test.done()
     )
 

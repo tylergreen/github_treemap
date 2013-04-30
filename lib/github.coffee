@@ -29,12 +29,12 @@ walk = (dir, done) ->
         fs.stat(file, (err,stat) ->
           if stat and stat.isDirectory()
             walk(file, (err,res) ->
-              results = results.concat(res)
+              results.push({directory: file, contents: res})
               pending--
               done(null, results) if pending == 0
             )
           else
-            results.push(file)
+            results.push({file: file})
             pending--
             done(null, results) if pending == 0
           )
