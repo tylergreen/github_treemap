@@ -13,10 +13,10 @@ github_request = (options, next) ->
   req = https.request(options, (res) ->
     response = ''
     res.on('data', (d) ->  response += d)
-    res.on('end', -> next(JSON.parse(response)))
+    res.on('end', -> next(null, JSON.parse(response)))
   )
   req.end()
-  req.on('error', (e) -> console.error("error #{e}"))
+  req.on('error', (err) -> next(err))
 
 walk = (dir, done) ->
     results = []
@@ -41,33 +41,37 @@ walk = (dir, done) ->
         )
       )
 
+ls_files = (path, next) ->
+  get_options['path'] = path
+  github_request(get_options, (err, data) ->
+    if err then next(err) else next(null, data))
 
 module.exports =
  x : () -> 3
 
- ls_files : (path, next) ->
-  get_options['path'] = path
-  github_request(get_options, (data) ->
-    files = data.map((x) -> x.name)
-    next(files))
+ ls_files: ls_files
 
- directory_tree: (path,next) ->
-  get_options['path'] = path
-  github_request(get_options, (err, data) ->
-    if err
-      #console.log("error: #{err}") if err
-      next(err)
-    else
-      # need to define the map and reduce step, otherwise infinite regression.
-      files = data.filter((x) -> x.type == 'file')
-      file_names = files.map((f) -> {file: f.name})
-      dirs = data.filter((x) -> x.type == 'dir')
-      async.map(dirs, (dir) ->
-        directory_tree(path + dir, (contents) ->
-          files = data.map((x) -> x.name)
-          next(contents)
+ directory_tree: (dir, done) ->
+    results = []
+    ls_files(dir, (err, list) ->
+      if err
+        done(err)
+      else
+        pending = list.length
+        done(null, results) if (pending == 0)
+        list.forEach((file) ->
+          path = "#{dir}/#{file.name}"
+          if file.type == 'dir'
+            directory_tree(path, (err,res) ->
+              results.push({directory: path, contents: res})
+              pending--
+              done(null, results) if pending == 0)
+          else
+            results.push({file: path})
+            pending--
+            done(null, results) if pending == 0
         )
       )
-    )
+
 
 module.exports['walk'] = walk
