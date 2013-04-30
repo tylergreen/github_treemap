@@ -2,6 +2,7 @@ github = require '../lib/github'
 
 exports['test'] =
   setUp: (done) ->
+    @flat_test_tree = [ {file: 'a.txt'}, {file: 'b.txt'}, {file: 'c.txt'}]
     @test_tree = [ {file: '.gitignore'},
       {file: 'init.el'},
       {directory: 'lisp',
@@ -25,16 +26,26 @@ exports['test'] =
 
   'request test': (test) ->
     test.expect(1)
-    path = '/repos/tylergreen/new-emacs/contents/'
+    path = '/repos/tylergreen/flat_test_repo/contents/'
     github.ls_files(path, (files) ->
-      test.deepEqual([ '.gitignore', 'init.el', 'lisp', 'tests'], files)
+      test.deepEqual([ 'a.txt', 'b.txt', 'c.txt'], files)
       test.done()
     )
 
-  'get the recursive tree structure': (test) ->
+  'get tree structure of a local dir': (test) ->
     test.expect(1)
-    path = '/repos/tylergreen/new-emacs/contents/'
+    github.walk('test/nested_test_repo', (err, results) ->
+      expected = [ 'test/nested_test_repo/a.txt',
+       'test/nested_test_repo/c.txt',
+       'test/nested_test_repo/b/b-a.txt' ]
+      test.deepEqual(expected, results)
+      test.done()
+    )
+
+  'get the recursive tree structure of a flat repository': (test) ->
+    test.expect(1)
+    path = '/repos/tylergreen/flat_test_repo/contents/'
     github.directory_tree(path, (tree) ->
-      test.deepEqual(tree,@test_tree)
+      test.deepEqual(tree,@flat_test_tree)
       test.done()
     )
