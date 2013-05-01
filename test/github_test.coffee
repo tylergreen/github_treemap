@@ -47,9 +47,9 @@ exports['test'] =
     path = '/repos/tylergreen/flat_test_repo/contents'
     github.directory_tree(path, (err, tree) ->
       test.ifError(err)
-      test_tree = [{"file":"/repos/tylergreen/flat_test_repo/contents/a.txt"},
-          {"file":"/repos/tylergreen/flat_test_repo/contents/b.txt"},
-          {"file":"/repos/tylergreen/flat_test_repo/contents/c.txt"}]
+      test_tree = [{"file":"/repos/tylergreen/flat_test_repo/contents/a.txt", size: 0},
+          {"file":"/repos/tylergreen/flat_test_repo/contents/b.txt", size: 0},
+          {"file":"/repos/tylergreen/flat_test_repo/contents/c.txt", size: 0}]
       test.deepEqual(tree,test_tree)
       test.done()
     )
@@ -59,10 +59,10 @@ exports['test'] =
     path = '/repos/tylergreen/nested_test_repo/contents'
     github.directory_tree(path, (err, tree) ->
       test.ifError(err)
-      test_tree =  [ { file: '/repos/tylergreen/nested_test_repo/contents/a.txt' },
-          { file: '/repos/tylergreen/nested_test_repo/contents/c.txt' },
-          { directory: '/repos/tylergreen/nested_test_repo/contents/b', contents: [ { file: '/repos/tylergreen/nested_test_repo/contents/b/b.txt' },
-          { file: '/repos/tylergreen/nested_test_repo/contents/b/d.txt' } ] } ]
+      test_tree =  [ { file: '/repos/tylergreen/nested_test_repo/contents/a.txt', size: 0 },
+          { file: '/repos/tylergreen/nested_test_repo/contents/c.txt', size: 0 },
+          { directory: '/repos/tylergreen/nested_test_repo/contents/b', size: 0, contents: [ { file: '/repos/tylergreen/nested_test_repo/contents/b/b.txt', size: 0 },
+          { file: '/repos/tylergreen/nested_test_repo/contents/b/d.txt', size: 0 } ] } ]
       test.deepEqual(tree,test_tree)
       test.done()
     )
