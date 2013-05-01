@@ -66,3 +66,16 @@ exports['test'] =
       test.deepEqual(tree,test_tree)
       test.done()
     )
+
+  'calculate size of a tree': (test) ->
+    tree1 = {directory: 'foo', contents: [ {file: 'a', size: 1}, {file: 'b', size: 2}] }
+    test.equal(github.dir_size(tree1), 3)
+    tree2 = {directory: 'foo', contents: [ {file: 'a', size: 1}, {directory: 'bar', contents: [ {file: 'b', size: 2}, {file: 'c', size: 3}]}] }
+    test.equal(github.dir_size(tree2), 6)
+    test.done()
+
+  'recursively annotate the directories in a tree so with their sizes': (test) ->
+    tree1 = [{directory: 'foo', contents: [ {file: 'a', size: 1}, {file: 'b', size: 2}, {directory: 'bar', contents: [ {file: 'c', size: 3} ] } ] }]
+    tree2 = [{directory: 'foo', size: 6, contents: [ {file: 'a', size: 1}, {file: 'b', size: 2}, {directory: 'bar', size: 3, contents: [ {file: 'c', size: 3} ] } ] }]
+    test.deepEqual(github.annotate_dirs(tree1), tree2)
+    test.done()

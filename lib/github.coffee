@@ -41,12 +41,36 @@ walk = (dir, done) ->
         )
       )
 
+dir_size = (directory) ->
+  directory.contents.reduce((acc, branch) ->
+    if branch.file
+      acc + branch.size
+    else
+      acc + dir_size(branch)
+  , 0 )
+
+# innefficient version -- walks tree twice
+annotate_dirs = (tree) ->
+  tree.map((branch) ->
+    if branch.file
+      branch
+    else
+      branch.size = dir_size(branch)
+      branch.contents = annotate_dirs(branch.contents)
+      branch
+  )
+
 ls_files = (path, next) ->
   get_options['path'] = path
   github_request(get_options, (err, data) ->
     if err then next(err) else next(null, data))
 
 directory_tree = (dir, done) ->
+  directory_tree_aux(dir, (err, tree) ->
+    if err then done(err) else done(null, annotate_dirs(tree)))
+
+# would like to abstract the walking of the tree from the operations on the nodes
+directory_tree_aux = (dir, done) ->
     results = []
     ls_files(dir, (err, list) ->
       if err
@@ -57,7 +81,7 @@ directory_tree = (dir, done) ->
         list.forEach((file) ->
           path = "#{dir}/#{file.name}"
           if file.type == 'dir'
-            directory_tree(path, (err,res) ->
+            directory_tree_aux(path, (err,res) ->
               if err
                 done(err)
               else
@@ -65,7 +89,7 @@ directory_tree = (dir, done) ->
                 pending--
                 done(null, results) if pending == 0)
           else
-            results.push({file: path})
+            results.push({file: path, size: file.size})
             pending--
             done(null, results) if pending == 0
         )
@@ -78,3 +102,5 @@ module.exports =
  directory_tree: directory_tree
 
 module.exports['walk'] = walk
+module.exports['dir_size'] = dir_size
+module.exports['annotate_dirs'] = annotate_dirs
